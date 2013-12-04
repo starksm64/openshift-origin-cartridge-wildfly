@@ -5,11 +5,11 @@ case "$1" in
     version="$2"
 esac
 
-mkdir -p ${OPENSHIFT_JBOSSAS_DIR}/{template,standalone/tmp,standalone/configuration,standalone/log,standalone/data}
+mkdir -p ${OPENSHIFT_WILDFLY_DIR}/{template,standalone/tmp,standalone/configuration,standalone/log,standalone/data}
 
-# Copy the version specific files up to jbossas directory
-cp -r ${OPENSHIFT_JBOSSAS_DIR}/versions/${version}/standalone/configuration/* ${OPENSHIFT_JBOSSAS_DIR}/standalone/configuration
-cp ${OPENSHIFT_JBOSSAS_DIR}/versions/${version}/bin/* ${OPENSHIFT_JBOSSAS_DIR}/bin
+# Copy the version specific files up to wildfly directory
+cp -r ${OPENSHIFT_WILDFLY_DIR}/versions/${version}/standalone/configuration/* ${OPENSHIFT_WILDFLY_DIR}/standalone/configuration
+cp ${OPENSHIFT_WILDFLY_DIR}/versions/${version}/bin/* ${OPENSHIFT_WILDFLY_DIR}/bin
 
 # Initialize the JBoss CLI history file
 [ -f ${OPENSHIFT_HOMEDIR}/.jboss-cli-history ] || touch ${OPENSHIFT_HOMEDIR}/.jboss-cli-history

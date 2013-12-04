@@ -2,20 +2,20 @@
 
 source $OPENSHIFT_CARTRIDGE_SDK_BASH
 
-JBOSSAS_BIN_DIR=${OPENSHIFT_JBOSSAS_DIR}/bin
-JBOSSAS_PID_FILE=${OPENSHIFT_HOMEDIR}/app-root/runtime/jbossas.pid
-JBOSSAS_DEPLOYMENTS_DIR=${OPENSHIFT_JBOSSAS_DIR}/standalone/deployments
+WILDFLY_BIN_DIR=${OPENSHIFT_WILDFLY_DIR}/bin
+WILDFLY_PID_FILE=${OPENSHIFT_HOMEDIR}/app-root/runtime/wildfly.pid
+WILDFLY_DEPLOYMENTS_DIR=${OPENSHIFT_WILDFLY_DIR}/standalone/deployments
 SCANCONFIG=""
 
-source $JBOSSAS_BIN_DIR/util
+source $WILDFLY_BIN_DIR/util
 
-cartridge_type="jbossas"
+cartridge_type="wildfly"
 
 # Return the deployment-scanner configuration
 function getscanconfig() {
     count=0
     while [ ${count} -lt 4 ]; do
-      controller="${OPENSHIFT_JBOSSAS_IP}:${OPENSHIFT_JBOSSAS_MANAGEMENT_NATIVE_PORT}"
+      controller="${OPENSHIFT_WILDFLY_IP}:${OPENSHIFT_WILDFLY_MANAGEMENT_NATIVE_PORT}"
       scanconfig=`jboss-cli.sh -c --controller=${controller} "/subsystem=deployment-scanner/:read-resource(recursive=true)" 2>&1 || :`
       if [[ $scanconfig =~ '"outcome" => "success"' ]] ; then
         SCANCONFIG=$scanconfig
@@ -31,14 +31,14 @@ function getscanconfig() {
 function waitondeployments() {
     if ! ismgmtup; then
       client_message "Timed out waiting for management listening port"
-      client_message "Could not connect to JBoss management interface, skipping deployment verification"
+      client_message "Could not connect to WildFly management interface, skipping deployment verification"
     else 
       getscanconfig
 
       if [ "$SCANCONFIG" == "" ]; then
-        client_message "Could not connect to JBoss management interface, skipping deployment verification"
+        client_message "Could not connect to WildFly management interface, skipping deployment verification"
       elif [[ $SCANCONFIG =~ '"scan-enabled" => true' ]]; then
-        pushd $JBOSSAS_DEPLOYMENTS_DIR
+        pushd $WILDFLY_DEPLOYMENTS_DIR
 
         artifacts=()
         while read -r -d $'\0'; do
@@ -107,8 +107,8 @@ function waitondeployments() {
 function isrunning() {
 
     # Check for running app
-    if [ -f "$JBOSSAS_PID_FILE" ]; then
-      jbpid=$(cat $JBOSSAS_PID_FILE);
+    if [ -f "$WILDFLY_PID_FILE" ]; then
+      jbpid=$(cat $WILDFLY_PID_FILE);
       if /bin/ps --pid $jbpid 1>&2 >/dev/null;
       then
         return 0
@@ -156,8 +156,8 @@ function ishttpup() {
     let count=0
     while [ ${count} -lt 64 ]
     do
-        if /usr/sbin/lsof -P -n -i "@${OPENSHIFT_JBOSSAS_IP}:${OPENSHIFT_JBOSSAS_HTTP_PORT}" | grep "(LISTEN)" > /dev/null; then
-            echo "Found ${OPENSHIFT_JBOSSAS_IP}:${OPENSHIFT_JBOSSAS_HTTP_PORT} listening port"
+        if /usr/sbin/lsof -P -n -i "@${OPENSHIFT_WILDFLY_IP}:${OPENSHIFT_WILDFLY_HTTP_PORT}" | grep "(LISTEN)" > /dev/null; then
+            echo "Found ${OPENSHIFT_WILDFLY_IP}:${OPENSHIFT_WILDFLY_HTTP_PORT} listening port"
             return 0
         fi
         let count=${count}+1
@@ -173,8 +173,8 @@ function ismgmtup() {
     let count=0
     while [ ${count} -lt 10 ]
     do
-        if /usr/sbin/lsof -P -n -i "@${OPENSHIFT_JBOSSAS_IP}:${OPENSHIFT_JBOSSAS_MANAGEMENT_NATIVE_PORT}" | grep "(LISTEN)" > /dev/null; then
-            echo "Found ${OPENSHIFT_JBOSSAS_IP}:${OPENSHIFT_JBOSSAS_MANAGEMENT_NATIVE_PORT} listening port"
+        if /usr/sbin/lsof -P -n -i "@${OPENSHIFT_WILDFLY_IP}:${OPENSHIFT_WILDFLY_MANAGEMENT_NATIVE_PORT}" | grep "(LISTEN)" > /dev/null; then
+            echo "Found ${OPENSHIFT_WILDFLY_IP}:${OPENSHIFT_WILDFLY_MANAGEMENT_NATIVE_PORT} listening port"
             return 0
         fi
         let count=${count}+1
@@ -186,7 +186,7 @@ function ismgmtup() {
 }
 
 function build() {
-  CONFIG_DIR="${OPENSHIFT_JBOSSAS_DIR}/standalone/configuration"
+  CONFIG_DIR="${OPENSHIFT_WILDFLY_DIR}/standalone/configuration"
   OPENSHIFT_MAVEN_MIRROR="${CONFIG_DIR}/settings.base.xml"
   if [[ $OPENSHIFT_GEAR_DNS =~ .*\.rhcloud\.com$ ]]
   then
@@ -258,13 +258,13 @@ function build() {
 }
 
 function deploy() {
-  echo "Deploying JBoss"
+  echo "Deploying WildFly"
 
-  # if repo/deployments has any files in it, sync them to $JBOSSAS_DEPLOYMENTS_DIR
-  # and delete any files in $JBOSSAS_DEPLOYMENTS_DIR that don't exist in
+  # if repo/deployments has any files in it, sync them to $WILDFLY_DEPLOYMENTS_DIR
+  # and delete any files in $WILDFLY_DEPLOYMENTS_DIR that don't exist in
   # repo/deployments
   if [ "$(ls ${OPENSHIFT_REPO_DIR}/deployments 2>/dev/null)" ]; then
-    rsync -r --delete --exclude ".*" ${OPENSHIFT_REPO_DIR}/deployments/ $JBOSSAS_DEPLOYMENTS_DIR
+    rsync -r --delete --exclude ".*" ${OPENSHIFT_REPO_DIR}/deployments/ $WILDFLY_DEPLOYMENTS_DIR
   fi
 }
 
@@ -280,9 +280,9 @@ function start() {
   if isrunning; then
       echo "Application is already running"
   else    
-    ${JBOSSAS_BIN_DIR}/standalone.sh > ${OPENSHIFT_TMP_DIR}/${cartridge_type}.log 2>&1 &
+    ${WILDFLY_BIN_DIR}/standalone.sh > ${OPENSHIFT_TMP_DIR}/${cartridge_type}.log 2>&1 &
     PROCESS_ID=$!
-    echo "$PROCESS_ID" > ${JBOSSAS_PID_FILE}
+    echo "$PROCESS_ID" > ${WILDFLY_PID_FILE}
 
     if ! ishttpup; then
         echo "Timed out waiting for http listening port"
@@ -298,12 +298,12 @@ function stop() {
   echo "Stopping $cartridge_type cartridge"
 
   if isrunning; then
-    if [ -f "$JBOSSAS_PID_FILE" ]; then
-      pid=$(cat $JBOSSAS_PID_FILE);
-      echo "Sending SIGTERM to jboss:$pid ..." 1>&2
+    if [ -f "$WILDFLY_PID_FILE" ]; then
+      pid=$(cat $WILDFLY_PID_FILE);
+      echo "Sending SIGTERM to wildfly:$pid ..." 1>&2
       killtree $pid
     else
-      echo "Failed to locate JBOSS PID File" 1>&2
+      echo "Failed to locate WildFly PID File" 1>&2
     fi
   fi
 }
@@ -328,9 +328,9 @@ function reload() {
 
 # Clean up any log files
 function tidy() {
-  client_message "Emptying log dir: $OPENSHIFT_JBOSSAS_LOG_DIR"
+  client_message "Emptying log dir: $OPENSHIFT_WILDFLY_LOG_DIR"
   shopt -s dotglob
-  rm -rf $OPENSHIFT_JBOSSAS_LOG_DIR/*
+  rm -rf $OPENSHIFT_WILDFLY_LOG_DIR/*
 }
 
 function threaddump() {
@@ -339,15 +339,15 @@ function threaddump() {
     if ! isrunning; then
         echo "Application is stopped"
         exit 1
-    elif [ -f "$JBOSSAS_PID_FILE" ]; then
-        pid=$(cat $JBOSSAS_PID_FILE);
+    elif [ -f "$WILDFLY_PID_FILE" ]; then
+        pid=$(cat $WILDFLY_PID_FILE);
         java_pid=$(ps h --ppid $pid -o '%p')
         kill -3 $java_pid
         client_result "Success"
         client_result ""
         client_result "The thread dump file will be available via: rhc tail $OPENSHIFT_APP_NAME -g $OPENSHIFT_GEAR_UUID -f ${OPENSHIFT_TMP_DIR}${cartridge_type}.log -o '-n 250'"
     else 
-        echo "Failed to locate JBOSS PID File"
+        echo "Failed to locate WildFly PID File"
     fi
 }
 

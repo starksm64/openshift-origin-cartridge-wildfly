@@ -1,26 +1,26 @@
 ---
-Name: jbossas
-Cartridge-Short-Name: JBOSSAS
-Display-Name: JBoss Application Server 7
+Name: wildfly
+Cartridge-Short-Name: WILDFLY
+Display-Name: WildFly Application Server 8
 Description: The leading open source Java EE6 application server for enterprise Java
   applications. Popular development frameworks include Seam, CDI, Weld, and Spring.
-Version: '7'
+Version: '8'
 License: LGPL
 License-Url: http://www.gnu.org/copyleft/lesser.txt
 Vendor: Red Hat
-Cartridge-Version: 0.0.9
+Cartridge-Version: 0.0.1
 Cartridge-Vendor: redhat
 Categories:
 - service
 - web_framework
 - java
-- jboss
+- wildfly
 - jee_full_profile
-Website: http://www.jboss.org
+Website: http://wildfly.org/
 Help-Topics:
   Developer Center: https://www.openshift.com/developers
 Cart-Data:
-- Key: OPENSHIFT_JBOSSAS_LOG_DIR
+- Key: OPENSHIFT_WILDFLY_LOG_DIR
   Type: environment
   Description: Directory to store application log files.
 - Key: OPENSHIFT_TMP_DIR
@@ -30,10 +30,10 @@ Cart-Data:
   Type: environment
   Description: Application root directory where application files reside. This directory
     is reset every time you do a git-push
-- Key: OPENSHIFT_JBOSSAS_HTTP_PORT
+- Key: OPENSHIFT_WILDFLY_HTTP_PORT
   Type: environment
   Description: Internal port to which the web-framework binds to.
-- Key: OPENSHIFT_JBOSSAS_IP
+- Key: OPENSHIFT_WILDFLY_IP
   Type: environment
   Description: Internal IP to which the web-framework binds to.
 - Key: OPENSHIFT_APP_DNS
@@ -54,16 +54,15 @@ Cart-Data:
   Type: environment
   Description: Unique ID which identified the gear. This value changes between gears.
 Provides:
-- jbossas-7
-- jbossas
-- jboss-as7
-- jbossas-standalone
-- jboss-as7-standalone
+- wildfly
+- wildfly-8
+- wildfly-standalone
+- wildfly-8-standalone
 Publishes:
-  publish-jboss-cluster:
-    Type: NET_TCP:jbossas-cluster-info
-  publish-jboss-remoting:
-    Type: NET_TCP:jbossas-remoting-info
+  publish-wildfly-cluster:
+    Type: NET_TCP:wildfly-cluster-info
+  publish-wildfly-remoting:
+    Type: NET_TCP:wildfly-remoting-info
 Subscribes:
   set-env:
     Type: ENV:*
@@ -71,10 +70,10 @@ Subscribes:
   set-doc-url:
     Type: STRING:urlpath
     Required: false
-  set-jboss-cluster:
-    Type: NET_TCP:jbossas-cluster-info
-  set-jboss-remoting:
-    Type: NET_TCP:jbossas-remoting-info
+  set-wildfly-cluster:
+    Type: NET_TCP:wildfly-cluster-info
+  set-wildfly-remoting:
+    Type: NET_TCP:wildfly-remoting-info
   set-generic-java:
     Type: ENV:NET_TCP:generic-java
 Scaling:
@@ -125,4 +124,4 @@ Endpoints:
 Additional-Control-Actions:
 - threaddump
 Compatible-Versions:
-- 0.0.8
+- 0.0.1

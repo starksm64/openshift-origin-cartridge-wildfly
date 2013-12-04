@@ -1,3 +1,3 @@
-The OpenShift `jbossas` cartridge documentation can be found at:
+The OpenShift `widldfy` cartridge documentation can be found at:
 
-https://github.com/openshift/origin-server/tree/master/cartridges/openshift-origin-cartridge-jbossas/README.md
+https://github.com/goldmann/openshift-origin-cartridge-wildfly/blob/master/README.md

@@ -4,7 +4,7 @@ Cartridge-Short-Name: WILDFLY
 Display-Name: WildFly Application Server 8
 Description: WildFly Application Server (formerly known as JBoss Application Server) is the latest release in a series of WildFly offerings. WildFly Application Server, is a fast, powerful, implementation of the Java Enterprise Edition 6 specification.  The state-of-the-art architecture built on the Modular Service Container enables services on-demand when your application requires them.
 Version: '8'
-Source-Url: https://github.com/goldmann/openshift-origin-cartridge-wildfly/archive/8.0.0-0.1.Beta1.zip
+Source-Url: git@github.com:goldmann/openshift-origin-cartridge-wildfly.git
 License: LGPL
 License-Url: http://www.gnu.org/copyleft/lesser.txt
 Vendor: Red Hat

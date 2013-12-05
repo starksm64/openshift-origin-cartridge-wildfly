@@ -2,20 +2,24 @@
 Name: wildfly
 Cartridge-Short-Name: WILDFLY
 Display-Name: WildFly Application Server 8
-Description: The leading open source Java EE6 application server for enterprise Java
-  applications. Popular development frameworks include Seam, CDI, Weld, and Spring.
+Description: WildFly Application Server (formerly known as JBoss Application Server) is the
+latest release in a series of WildFly offerings. WildFly Application Server, is
+a fast, powerful, implementation of the Java Enterprise Edition 6
+specification.  The state-of-the-art architecture built on the Modular Service
+Container enables services on-demand when your application requires them.
 Version: '8'
+Source-Url: https://github.com/goldmann/openshift-origin-cartridge-wildfly/archive/8.0.0-0.1.Beta1.zip
 License: LGPL
 License-Url: http://www.gnu.org/copyleft/lesser.txt
 Vendor: Red Hat
 Cartridge-Version: 0.0.1
-Cartridge-Vendor: redhat
+Cartridge-Vendor: goldmann
 Categories:
 - service
 - web_framework
 - java
 - wildfly
-- jee_full_profile
+- experimental
 Website: http://wildfly.org/
 Help-Topics:
   Developer Center: https://www.openshift.com/developers
@@ -123,5 +127,3 @@ Endpoints:
   Private-Port: 9990
 Additional-Control-Actions:
 - threaddump
-Compatible-Versions:
-- 0.0.1

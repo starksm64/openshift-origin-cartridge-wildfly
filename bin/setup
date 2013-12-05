@@ -5,7 +5,7 @@ case "$1" in
     version="$2"
 esac
 
-mkdir -p ${OPENSHIFT_WILDFLY_DIR}/{template,standalone/tmp,standalone/configuration,standalone/log,standalone/data}
+mkdir -p ${OPENSHIFT_WILDFLY_DIR}/{template,standalone/tmp,standalone/configuration,standalone/log,standalone/data,standalone/deployment}
 
 # Copy the version specific files up to wildfly directory
 cp -r ${OPENSHIFT_WILDFLY_DIR}/versions/${version}/standalone/configuration/* ${OPENSHIFT_WILDFLY_DIR}/standalone/configuration

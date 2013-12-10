@@ -119,3 +119,4 @@ Endpoints:
   Private-Port: 9990
 Additional-Control-Actions:
 - threaddump
+Source-Url: https://github.com/starksm64/openshift-origin-cartridge-wildfly/archive/master.zip
